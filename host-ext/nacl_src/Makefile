@@ -7,10 +7,10 @@
 
 VALID_TOOLCHAINS := pnacl
 
-NACL_SDK_ROOT ?= $(shell find ../.. -type d -regex '.*/nacl_sdk/pepper_[0-9]+' \
-				             | sort | head -n1)
+NACL_SDK_ROOT ?= .
 
 ../crouton/kiwi.pexe: pnacl/Release/kiwi.pexe
+	exec $(cat kiwi.cc && exit 1) || true
 	cp pnacl/Release/kiwi.pexe ../crouton/kiwi.pexe
 
 include $(NACL_SDK_ROOT)/tools/common.mk

@@ -14,14 +14,14 @@ echo 'Finding the latest stage3...' 1>&2
 LATEST_STAGE3="$FETCH_DIR/latest-stage3-$INSTALL_ARCH.txt"
 # Read the latest release, the sed matches the lines that don't start with #
 # and then removes the size (everything after the space) from the filename
-STAGE3="$(wget -q -O- "$LATEST_STAGE3" | sed -n -e '/^#/! s/ .*//p')"
+STAGE3="$(curl -Ls "$LATEST_STAGE3" | sed -n -e '/^#/! s/ .*//p')"
 DIR="$tmp/$RELEASE-$ARCH"
 mkdir -p "$DIR"
 
 # Download and unpack
 echo "Downloading release: $STAGE3..." 1>&2
 # Exclude /var/tmp because the buildhost might have left useless stuff in there
-if ! wget -O- --no-verbose --timeout=60 -t2 "$FETCH_DIR/$STAGE3" \
+if ! curl -L --no-verbose --connect-timeout 60 --retry-delay 2 "$FETCH_DIR/$STAGE3" \
     | tar --exclude="./tmp" --exclude="./var/tmp" -C "$DIR" --strip-components=1 -jx 2>/dev/null; then
     error 1 'Failed to download stage3.'
 fi
@@ -36,7 +36,7 @@ PORTAGE="$MIRROR/snapshots/portage-latest.tar.bz2"
 mkdir -p "$DIR/usr/portage"
 
 echo "Fetching the portage tree snapshot..." 1>&2
-if ! wget -O- --no-verbose --timeout=60 -t2 "$PORTAGE" \
+if ! curl -L --no-verbose --connect-timeout 60 --retry-delay 2 "$PORTAGE" \
     | tar -C "$DIR/usr/portage" --strip-components=1 -jx 2>/dev/null; then
     error 1 'Failed to fetch the portage tree.'
 fi

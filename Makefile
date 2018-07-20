@@ -27,11 +27,11 @@ RELEASE = build/release.sh
 VERSION = 1
 TARPARAMS ?= -j
 
-CFLAGS=-g -Wall -Werror -Os
+CFLAGS=-Os
 
 croutonfbserver_LIBS = -lX11 -lXdamage -lXext -lXfixes -lXtst
 croutonxi2event_LIBS = -lX11 -lXi
-croutonfreon.so_LIBS = -ldl -ldrm -I/usr/include/libdrm
+croutonfreon.so_LIBS = -ldl -ldrm -I/usr/local/include/libdrm
 
 croutonwebsocket_DEPS = src/websocket.h
 croutonfbserver_DEPS = src/websocket.h
@@ -47,6 +47,8 @@ else
     endif
 endif
 
+top-all: all
+	cat Makefile 1>/dev/null
 
 $(TARGET): $(WRAPPER) $(SCRIPTS) $(GENVERSION) $(GITHEAD) Makefile
 	{ \
