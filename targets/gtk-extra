@@ -10,23 +10,25 @@ DESCRIPTION='GTK-based tools including gdebi, gksu, and a simple browser.'
 if [ "${DISTROAKA:-"$DISTRO"}" = 'gentoo' ]; then
     set_flags gtk gnome-keyring policykit
 else
-    install_dummy network-manager network-manager-gnome
+  install_dummy network-manager network-manager-gnome
+  install gdebi
 fi
-install debian=gdebi, gksu
+if release -lt buster -lt kali-rolling -lt artful; then
+  install gksu
+fi
 
 if [ "${DISTROAKA:-"$DISTRO"}" = 'gentoo' ]; then
     install dillo
 else
-    for BROWSER in netsurf-gtk dillo hv3 ""; do
-        test -n "$BROWSER"
-        if install "$BROWSER"; then
-            bin="/usr/bin/$BROWSER"
-            for link in x-www-browser gnome-www-browser; do
-                if ! update-alternatives --query "$link" | grep -q "$bin"; then
-                    update-alternatives --install "/usr/bin/$link" "$link" "$bin" 10
-                fi
-             done
-             break
-        fi
-    done
-fi
+for BROWSER in netsurf-gtk dillo hv3 ""; do
+    test -n "$BROWSER"
+    if install "$BROWSER"; then
+        bin="/usr/bin/$BROWSER"
+        for link in x-www-browser gnome-www-browser; do
+            if ! update-alternatives --query "$link" | grep -q "$bin"; then
+                update-alternatives --install "/usr/bin/$link" "$link" "$bin" 10
+            fi
+        done
+        break
+    fi
+done
